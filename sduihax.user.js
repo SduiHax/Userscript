@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        Sdui Hax
 // @description Dark theme, auto message and some misc features for app.sdui.de
-// @version     4
-// @updateURL   https://github.com/SduiHax/Userscript/
+// @version     5
+// @updateURL   https://github.com/SduiHax/Userscript/raw/main/sduihax.user.js
 // @homepageURL https://github.com/SduiHax/Userscript/
 // @author      sduihax@pm.me
 // @grant       none
@@ -19,8 +19,7 @@ console.log(`%c                ▄▄              ▄▄
 ▄     ▀█████    ██   ██    ██   ██       ██      ██   ▄█████     ███    
 ██     ██▀██    ██   ██    ██   ██       ██      ██  ██   ██   ▄█▀ ██▄  
 █▀█████▀  ▀████▀███▄ ▀████▀███▄████▄   ▄████▄  ▄████▄▄████▀██▄██▄   ▄██▄
-
-%c     - Imagine not having dark theme™ | prototype 4: "git gud"`, "color:red;", "color:green;font-family:Comic Sans MS");
+%c     - Imagine not having dark theme™ | prototype 5: "stupid timetable lines"`, "color:red;", "color:green;font-family:Comic Sans MS");
 
 const namesToReplace = {
   "Hofmann": "Hoffmann",
@@ -28,19 +27,18 @@ const namesToReplace = {
   // "old name": "new name",
 }
 
+let darkThemeApplied = false;
+
 // Dark Theme
-addGlobalStyle(`
+const darkTheme = `
 body {
 	background: #000;
 	color: #eee;
 }
-
-
 .bg-white {
   /* background-color: #fff !important; */
   background-color: #000 !important;
 }
-
 :root {
   /* --white: #fff; */
   /* --gray: #6c757d; */
@@ -53,204 +51,180 @@ body {
   --light: #222;
   --dark: #fff;
 }
-
 .card, .slot {
   /* background-color: #fff; */
   /* border: 0 solid rgba(0,0,0,0); */
   background-color: #444;
   border: white;
 }
-
 .card:hover, .slot:hover {
 	background-color: #3a3a3a;
-}
-
-#navbar-main.without-notch[data-v-063fa948] {
-  /* background: #fff !important; */
-  background: #000 !important;
-}
-
-#navbar-main .nav-link[data-v-063fa948] {
-  /* background: #fff; */
-  background: #000;
 }
 
 .white-bg[data-v-08298d02] {
   /* background-color: #fff; */
   background-color: #000;
 }
-
 .labels-wrapper[data-v-1e85d048] {
   /* background: #fff; */
   background: #222;
 }
-
 .sdui-group-item {
   /* background-color: #fff; */
   background-color: #333;
 }
-
 .sdui-group-item .left-wrapper {
   /* color: #282829; */
   color: #fff;
 }
-
 .modal-content {
 	background-color: #555;
 }
-
 .sdui-group-item.hoverable:hover {
 	background-color: #222;
 }
-
 .fixed-bottom {
   /* background: #fff !important; */
   background: #000 !important;
 }
-
 .fixed-bottom::after {
   /* background: #fff; */
   background: #000;
 }
-
 .fixed-top::after {
   /* background: #fff !important; */
   /* background: rgba\) !important; */
   background: rgba(0,0,0,0) !important;
 }
-
 .btn {
   /* color: #212529; */
   color: #fff;
 }
-
-.buttons-wrapper button[data-v-3f114062] {
+.buttons-wrapper button {
   /* background-color: #f8f8f9; */
   background-color: #333 !important;
 }
-
-
-.buttons-wrapper button[data-v-3f114062]:hover {
+.buttons-wrapper button:hover {
   /* background-color: #e8e9ea; */
   background-color: #555 !important;
 }
-
 .btn-secondary:hover {
   /* border-color: #fff; */
 	border-color: rgba(0,0,0,0);
 }
-
 .btn:hover {
   /* color: #ccc; */
   color: #fff !important;
 }
-
 .btn-secondary {
 	/* border-color: #e8e9ea; */
 	border-color: rgba(0,0,0,0);
 }
-
 .news-wrapper {
 	color: #fff;
 }
-
 p{
 	color: #fff;
 }
-
 .dark-grey {
   /* color: #54575d; */
   color: #aaa;
 }
-
 .channel-title[data-v-c749f9b6] {
   /* color: #282829; */
   color: #fff;
 }
-
 .with-lines small {
 	background: rgba(0,0,0,0);
 }
-
 .scroll-btn {
 	background: #222;
 }
-
 .dropdown-item:active, .dropdown-item:hover {
   /* background-color: #fff !important; */
   background-color: #222 !important;
 }
-
 .dropdown-menu {
   /* background-color: #fff; */
   background-color: #000;
 }
-
 .popover {
   /* background-color: #fff; */
   background-color: #444;
 }
-
 .popover-body {
   /* color: #979faa; */
   color: #fff;
 }
-
 .popover {
   /* box-shadow: 0 5px 50px 0 #d9dbde; */
   box-shadow: 0 5px 50px 0 #777;
 }
-
-.chat-wrapper .message-wrapper.got .message[data-v-36eb5f8d] {
+.chat-wrapper .message-wrapper.got .message {
   /* border-color: #e8e9ea; */
-  border-color: #444;
+  border-color: #444 !important;
 }
-
 .got .original-message[data-v-7c9bfac2] {
   /* background: #e8e9ea; */
   background: #222;
 }
-
 .list-content-wrapper[data-v-019434ec] {
   /* border: 1px solid #e8e9ea; */
   border: 1px solid #777;
 }
-
 .sdui-group-item .bottom-gradient, .sdui-group-item .channel-bottom-gradient {
   /* box-shadow: inset 0 -1px 0 #e8e9ea; */
   box-shadow: inset 0 -1px 0 #777;
 }
-
 .card, .slot {
   /* border: white; */
   border: #777;
 }
-
 .news-preview {
   /* border: 1px solid #e8e9ea; */
   border: 1px solid #777;
 }
-
-.btn-round-padding[data-v-717cb6c4], .btn-round[data-v-717cb6c4] {
+.btn-round-padding, .btn-round.with-icon {
   /* background-color: #fff !important; */
   /* color: #282829 !important; */
   background-color: #2226 !important;
   color: #fff !important;
 }
-
-#navbar-main .nav-link[data-v-e431941c] {
+#navbar-main .nav-link {
   /* background: #fff; */
-  background: #000;
+  background: #000 !important;
 }
-
-#navbar-main.without-notch[data-v-e431941c] {
+#navbar-main.without-notch.navbar-expand-lg {
   /* background: #fff !important; */
   background: #000 !important;
-}`);
+}
+.btn.current_day {
+	background: #0000 !important;
+	color: #fff !important;
+}
+
+.day-wrapper::after {
+  /* background: #e8e9ea; */
+  background: #0000 !important;
+}
+
+.date-item:not(.break)::after {
+  /* background: #e8e9ea; */
+  background: #0000 !important;
+}
+
+.date-item.break.long::after {
+  /* background: #e8e9ea; */
+  background: #0000 !important;
+}
+
+
+`;
 
 // Executes 10 times a second, a good tradeoff for performance and being invisible
 setInterval(()=>{
   // Dark theme adder
+  addGlobalStyle(darkTheme);
   const title = document.querySelector("h1");
   if(title && !title.innerText.endsWith("Dark Theme)")) {
     title.style.color = "#fff"
@@ -305,11 +279,13 @@ setInterval(()=>{
 
 // Adds a style globally, as used above
 function addGlobalStyle(css) {
+  	if(darkThemeApplied) return;
     var head, style;
     head = document.getElementsByTagName('head')[0];
-    if (!head) {console.log(":("); return; }
+    if (!head) return;
     style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = css;
     head.appendChild(style);
+  	darkThemeApplied = true;
 }
