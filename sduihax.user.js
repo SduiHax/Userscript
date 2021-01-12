@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Sdui Hax
 // @description Dark theme, auto message and some misc features for app.sdui.de
-// @version     5
+// @version     6
 // @updateURL   https://github.com/SduiHax/Userscript/raw/main/sduihax.user.js
 // @homepageURL https://github.com/SduiHax/Userscript/
 // @author      sduihax@pm.me
@@ -19,7 +19,7 @@ console.log(`%c                ▄▄              ▄▄
 ▄     ▀█████    ██   ██    ██   ██       ██      ██   ▄█████     ███    
 ██     ██▀██    ██   ██    ██   ██       ██      ██  ██   ██   ▄█▀ ██▄  
 █▀█████▀  ▀████▀███▄ ▀████▀███▄████▄   ▄████▄  ▄████▄▄████▀██▄██▄   ▄██▄
-%c     - Imagine not having dark theme™ | prototype 5: "stupid timetable lines"`, "color:red;", "color:green;font-family:Comic Sans MS");
+%c     - Imagine not having dark theme™ | prototype 6: "timetable api still brokey lol"`, "color:red;", "color:green;font-family:Comic Sans MS");
 
 const namesToReplace = {
   "Hofmann": "Hoffmann",
@@ -65,9 +65,9 @@ body {
   /* background-color: #fff; */
   background-color: #000;
 }
-.labels-wrapper[data-v-1e85d048] {
+.labels-wrapper {
   /* background: #fff; */
-  background: #222;
+  background: #222 !important;
 }
 .sdui-group-item {
   /* background-color: #fff; */
@@ -130,9 +130,9 @@ p{
   /* color: #54575d; */
   color: #aaa;
 }
-.channel-title[data-v-c749f9b6] {
+.channel-title {
   /* color: #282829; */
-  color: #fff;
+  color: #fff !important;
 }
 .with-lines small {
 	background: rgba(0,0,0,0);
@@ -218,8 +218,23 @@ p{
   background: #0000 !important;
 }
 
+.new-message-wrapper .send-message-form[data-v-57d9162d] {
+  /* background: #fff; */
+  /* border-top: 1px solid #e8e9ea; */
+  background: #333;
+  border-top: 0px solid #e8e9ea;
+}
 
 `;
+
+
+// Window title animation variables
+let animationFrame = 0;
+const animatedTitle = "𝚜𝚍𝚞𝚒 𝚊𝚙𝚙 𝚍𝚊𝚛𝚔 𝚝𝚑𝚎𝚖𝚎";
+const animatedTitle2 = "𝚂𝙳𝚄𝙸 𝙰𝙿𝙿 𝙳𝙰𝚁𝙺 𝚃𝙷𝙴𝙼𝙴";
+let currentTitle = animatedTitle;
+let animationDirection = false;
+
 
 // Executes 10 times a second, a good tradeoff for performance and being invisible
 setInterval(()=>{
@@ -230,6 +245,18 @@ setInterval(()=>{
     title.style.color = "#fff"
   	title.innerText += " (Dark Theme)"
   }
+  
+  
+  // Window title animation
+  animationFrame++;
+  if(animatedTitle.length == animationFrame) {
+    currentTitle = animationDirection ? animatedTitle : animatedTitle2;
+    animationFrame = 0;
+    animationDirection = !animationDirection;
+  }
+  currentTitle = setCharAt(currentTitle,animationFrame,animationDirection ? animatedTitle[animationFrame] : animatedTitle2[animationFrame]);
+  if(animatedTitle[animationFrame+1] == " ") animationFrame++;
+  setWindowTitle(currentTitle + " v6");
   
   // Update Link adder
   const links = document.getElementById("draggable")
@@ -245,7 +272,6 @@ setInterval(()=>{
                 </h2><div data-v-e43e6fa2="" class="small link-description">
                   Mehr Informationen
                 </div></div><div data-v-e43e6fa2="" class="text-right handle col-2"><a data-v-e43e6fa2="" role="button" href="#" target="_self" class="btn"><span data-v-e43e6fa2="" aria-hidden="true" role="button" class="small white icon-arrow-corner-right icon"><!----></span></a></div></div></article>`
-    console.log(a.outerHTML);
     document.getElementById("draggable").children[0].appendChild(a)
   }
   
@@ -288,4 +314,15 @@ function addGlobalStyle(css) {
     style.innerHTML = css;
     head.appendChild(style);
   	darkThemeApplied = true;
+}
+
+// Sets the title of the browser window
+function setWindowTitle(title) {
+  document.getElementsByTagName("title")[0].innerText = title;
+}
+
+// Sets the char in a string at the specified index
+function setCharAt(str,index,chr) {
+    if(index > str.length-1) return str;
+    return str.substring(0,index) + chr + str.substring(index+1);
 }
